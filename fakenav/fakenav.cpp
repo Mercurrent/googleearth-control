@@ -40,7 +40,7 @@ void update_dev_file(){
 }
 
 //main fork()'ing socket server
-int open_server_socket(){
+int run_server(){
 	int serversock, portno;	
 	
 	socklen_t clilen;
@@ -68,9 +68,7 @@ int open_server_socket(){
 	}
 
 	listen(serversock, 5);
-	
-	handles.push_back(serversock);
-	        
+		        
     printf("waiting for clients\n");
     
     clilen = sizeof(cli_addr);
@@ -100,9 +98,9 @@ int open_server_socket(){
 	            
 	            //printf("Got: %s\n", buffer);
 	             	            
-	            if(sscanf(buffer, "%f, %f, %f, %f, %f, %f", 
+	            if(sscanf(buffer, "%f, %f, %f, %f, %f, %f\n", 
 			            &x, &y, &z, &yaw, &pitch, &roll) == 6){	            
-    	            update_dev_file();
+                    update_dev_file();
 	            }else{
 	                printf("Couldn't parse: '%s'\n", buffer);
                 }
@@ -120,13 +118,10 @@ int open_server_socket(){
 
 //control-c handler
 void on_sigint(int sig) {
-    
-    for(int i=0;i<(int)handles.size();i++){
-        close(handles[i]);
-    }
-    handles.clear();
-    
+       
     signal(SIGINT, SIG_DFL);
+    
+    close(fd);
     
     printf("goodbye...\n");
     
@@ -140,25 +135,10 @@ int main(int argc, char **argv){
 	printf("waiting for google earth to open %s...\n", DEV_NAME);
 
 	fd = open(DEV_NAME, O_WRONLY);
-	
-	handles.push_back(fd);
-	
+		
 	printf("opened pipe!\n");
 	
 	signal(SIGINT, on_sigint);
 		
-	int client = open_server_socket();
-
-	printf("client connected\n");
-	
-    
-    while(true){
-
-	    read(client, buffer, 256);
-	    //printf("Got: %s\n", buffer);
-	    sscanf(buffer, "%f, %f, %f, %f, %f, %f", 
-	                    &x, &y, &z, &yaw, &pitch, &roll);
-	    
-	    update_dev_file();
-    }
+	run_server();
 }

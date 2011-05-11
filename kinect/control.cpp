@@ -70,10 +70,12 @@ void update_control(XnUserID player){
     }
             
     //x,y,z,yaw,pitch,roll
-    sprintf(buf, "%f, %f, %f, %f, %f, %f", 
+    sprintf(buf, "%f, %f, %f, %f, %f, %f\n", 
             0.0f, accel, 0.0f, horiz, vert, 0.0f);
+            
+    int len = strlen(buf);
         
-    if(server > 0 && write(server, buf, 256) != 256){
+    if(server > 0 && write(server, buf, len) != len){
         printf("error writing\n");
         exit(1);
     }
