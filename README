@@ -11,7 +11,8 @@ fakenav:
 - This is what feeds data into GE. GE needs to be configured to read from a 
 SpaceNavigator joystick device, that is actually this program. We make a named
 pipe, by default named '/tmp/fakenav'.
-- fakenav reads from a network socket. It expects 6 floats, comma seperated
+- fakenav reads from a network socket. It expects 6 floats, comma seperated, 
+ending with a newline
 
 kinect:
 - This requires the setup and libraries on:
