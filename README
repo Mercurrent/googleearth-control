@@ -1,0 +1,24 @@
+A few quick hacks that I put together one afternoon to feed custom control data
+into Google Earth, emulating a joystick. 
+
+We use this in combination with Liquid Galaxy to control a number of linked
+GE instances on our university display wall. It's pretty tied to our hardware,
+but it might be useful to someone.
+
+It's in three parts, 'fakenav' and 'kinect'.
+
+fakenav:
+- This is what feeds data into GE. GE needs to be configured to read from a 
+SpaceNavigator joystick device, that is actually this program. We make a named
+pipe, by default named '/tmp/fakenav'.
+- fakenav reads from a network socket. It expects 6 floats, comma seperated
+
+kinect:
+- This requires the setup and libraries on:
+http://www.keyboardmods.com/2010/12/howto-kinect-openninite-skeleton.html
+- It is adapted from the 'player' example that comes with those libraries
+- Connects over the network to the fakedev program
+
+sdlcontrol:
+- this lets you use keyboard or joystick from a remote machine. We use it with
+a USB DDR mat. 
