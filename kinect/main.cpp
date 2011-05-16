@@ -11,7 +11,7 @@
 #include "SceneDrawer.h"
 
 extern void update_control(XnUserID player);
-extern void init_control();
+extern void init_control(const char *serveraddr, int port);
 
 xn::Context g_Context;
 xn::DepthGenerator g_DepthGenerator;
@@ -349,8 +349,12 @@ void glInit (int * pargc, char ** argv)
 
 int main(int argc, char **argv)
 {
-
-    init_control();
+    if(argc <= 2){
+        printf("Usage: %s <server>:<port>\n", argv[0]);
+        return 1;
+    }
+    
+    init_control(argv[1], atoi(argv[2]));
 
 	XnStatus rc = XN_STATUS_OK;
 	xn::EnumerationErrors errors;

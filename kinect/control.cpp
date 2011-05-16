@@ -9,15 +9,10 @@ bool confidence = false;
 
 int connect_to_server(const char *address, int portno);
 
-const char *SERVER_ADDRESS = "dn3";
-const int SERVER_PORT = 24567;
-
-
-
 //called on startup
-void init_control(){   
+void init_control(const char *serveraddr, int port){   
     
-    server = connect_to_server(SERVER_ADDRESS, SERVER_PORT);
+    server = connect_to_server(serveraddr, port);
     
     if(server == -1){
         printf("error connecting\n");
@@ -32,7 +27,7 @@ XnPoint3D get_joint(XnUserID player, XnSkeletonJoint jointid){
 	g_UserGenerator.GetSkeletonCap().GetSkeletonJointPosition(player, jointid, joint1);
 
     //blah. Is 0.5 right?
-	if (joint1.fConfidence < 0.5){
+	if (joint1.fConfidence < 0.1){
 	    confidence = false;		
 	}
 
@@ -92,7 +87,7 @@ int connect_to_server(const char *address, int portno){
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
-        printf("ERROR opening socket");
+        printf("ERROR opening socket\n");
         exit(0);
     }
     server = gethostbyname(address);
@@ -107,7 +102,7 @@ int connect_to_server(const char *address, int portno){
          server->h_length);
     serv_addr.sin_port = htons(portno);
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0){ 
-        printf("ERROR connecting");
+        printf("ERROR connecting\n");
         exit(0);
     }
     

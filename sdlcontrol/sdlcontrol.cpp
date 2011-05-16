@@ -7,7 +7,7 @@ bool joy_down[32];
 char buffer[256];
 
 //blah. This seemed about right
-int SPEED = 200;
+int SPEED = 400;
 
 //global orientations
 float roll, pitch, yaw, x, y, z = 0;
@@ -15,18 +15,28 @@ float roll, pitch, yaw, x, y, z = 0;
 //server connection
 int server = -1;
 
+float lastSend = 0.0f;
+
 //entry
 int main(int argc, char **argv){
-
+  
+    if(argc <= 2){
+        printf("Usage: %s <server>:<port>\n", argv[0]);
+        return 1;
+    }
+    
     memset(&key_down, 0, sizeof(key_down));
     memset(&joy_down, 0, sizeof(joy_down));
 
     SDL_Surface *screen;
     SDL_Event event;
     
-    printf("Connecting to server %s:%d\n", SERVER_ADDRESS, SERVER_PORT);
+    const char *serveraddr = argv[1];
+    int port = atoi(argv[2]);
     
-    server = connect_to_server(SERVER_ADDRESS, SERVER_PORT);
+    printf("Connecting to server %s:%d\n", serveraddr, port);
+    
+    server = connect_to_server(serveraddr, port);
     
     if(server < 0){
         printf("Couldn't connect\n");
@@ -99,19 +109,17 @@ int main(int argc, char **argv){
         
         
         update(SDLK_UP, SDLK_DOWN, 2, 1, &pitch);
-        update(SDLK_LEFT, SDLK_RIGHT, 0, 3, &yaw);
+        update(SDLK_LEFT, SDLK_RIGHT, 3, 0, &yaw);
         update(SDLK_a, SDLK_d, &x);
-        update(SDLK_w, SDLK_s, &y);
+        update(SDLK_w, SDLK_s, 4, 6, &y);
+        update(SDLK_q, SDLK_s, 5, 7, &y);
         update(SDLK_q, SDLK_e, &z);
         update(SDLK_PAGEUP, SDLK_PAGEDOWN, &roll);
         
         
         if(key_down[SDLK_z]){        
-            if(constant_speed == 0.0f){
-                constant_speed = 1.0f;
-            }else{
-                constant_speed *= 1.5f;
-            }
+            constant_speed++;
+            constant_speed *= 2.0f;
         }
 
         if(key_down[SDLK_x]){
@@ -121,14 +129,25 @@ int main(int argc, char **argv){
         if(key_down[SDLK_c]){
             constant_speed = 0;
         }
+        
+        //printf("%f\n", constant_speed);
 
         y -= constant_speed;
         
         //prepare string and send to server
-        sprintf(buffer, "%f, %f, %f, %f, %f, %f\n", x, y, z, yaw, pitch, roll);    
-        //printf("%s\n", buffer);    
-        write(server, buffer, strlen(buffer));
+        float thisAmount = x+y+z+yaw+pitch+roll;
         
+        if(thisAmount == 0.0f && lastSend == 0.0f){
+            //blah, don't send
+        }else{
+        
+            lastSend = thisAmount;
+            
+            sprintf(buffer, "%f, %f, %f, %f, %f, %f\n", x, y, z, yaw, pitch, roll);    
+            //printf("%s\n", buffer);    
+            write(server, buffer, strlen(buffer));
+            
+        }
         //limit to 20fps        
         SDL_Delay(1.0f/20.0f * 1024);        
     }

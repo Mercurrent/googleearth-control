@@ -2,7 +2,7 @@
 
 import socket, traceback
 
-host = ''                               # Bind to all interfaces
+host = ''
 port = 21567
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

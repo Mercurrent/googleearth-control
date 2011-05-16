@@ -20,9 +20,6 @@
 
 #include <vector>
 
-const char *SERVER_ADDRESS = "dn3";
-const int SERVER_PORT = 23457;
-
 void update(int k_add, int k_sub, int j_add, int j_sub, float *mod);
 void update(int k_add, int k_sub, float *mod);
 
